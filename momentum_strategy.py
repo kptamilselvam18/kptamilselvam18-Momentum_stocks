@@ -206,10 +206,11 @@ def apply_volatility_filter(df_to_filter):
                 continue
 
             df.ta.atr(append=True, length=14)
-            atr_col_name = "ATR_14"
+            atr_cols = [c for c in df.columns if c.upper().startswith("ATR") and "14" in c]
 
-            if atr_col_name not in df.columns:
+            if not atr_cols:
                 continue
+            atr_col_name = atr_cols[0]
 
             latest_atr = df[atr_col_name].iloc[-1]
             current_close = df["Close"].iloc[-1]
