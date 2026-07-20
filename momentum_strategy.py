@@ -125,8 +125,30 @@ def get_nifty500_tickers():
             print("Error: Nifty 500 CSV is empty.")
             break
 
-    # Fallback: NSE is blocking us (common from cloud/CI IPs). Use a mirrored
-    # copy of the same constituent list so the run can still proceed.
+    # Fallback 1: NSE is blocking us (common from cloud/CI IPs). Try Wikipedia's
+    # Nifty 500 constituent table — it isn't blocked by anti-bot protection and
+    # is reasonably current (periodically updated by editors).
+    print("Falling back to Wikipedia's Nifty 500 list...")
+    try:
+        wiki_headers = {"User-Agent": "Mozilla/5.0 (compatible; MomentumBot/1.0)"}
+        resp = requests.get(
+            "https://en.wikipedia.org/wiki/NIFTY_500", headers=wiki_headers, timeout=30
+        )
+        resp.raise_for_status()
+        tables = pd.read_html(io.StringIO(resp.text), match="Symbol")
+        for table in tables:
+            if "Symbol" in table.columns and len(table) > 100:
+                tickers = table["Symbol"].dropna().astype(str).str.strip().tolist()
+                yf_tickers = [t + ".NS" for t in tickers if t]
+                print(f"Found {len(yf_tickers)} Nifty 500 constituents (Wikipedia).")
+                return yf_tickers
+        print("Error: Could not locate Nifty 500 table on Wikipedia.")
+    except Exception as e:
+        print(f"Error fetching Wikipedia Nifty 500 data: {e}")
+
+    # Fallback 2: last resort — a community-maintained GitHub mirror. May lag
+    # behind current constituents (delisted/renamed tickers), but keeps the
+    # run alive rather than failing outright.
     print("Falling back to mirrored Nifty 500 list...")
     try:
         response = requests.get(fallback_url, timeout=30)
