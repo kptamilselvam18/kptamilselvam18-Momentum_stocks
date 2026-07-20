@@ -78,23 +78,72 @@ def check_market_regime():
 # ---------------------------------------------------------------------------
 def get_nifty500_tickers():
     print("Fetching Nifty 500 constituents...")
+
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+        ),
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Referer": "https://www.nseindia.com/market-data/live-equity-market",
+        "Connection": "keep-alive",
+    }
+
     nifty500_url = "https://archives.nseindia.com/content/indices/ind_nifty500list.csv"
+    fallback_url = (
+        "https://raw.githubusercontent.com/kprohith/nse-stock-analysis/"
+        "master/ind_nifty500list.csv"
+    )
+
+    session = requests.Session()
+    session.headers.update(headers)
+
+    # Prime cookies by visiting the main site first, then the indices page,
+    # since NSE's servers reject requests that don't look like a real browser.
     try:
-        response = requests.get(nifty500_url, timeout=30)
+        session.get("https://www.nseindia.com", timeout=15)
+        session.get("https://www.nseindia.com/market-data/live-equity-market", timeout=15)
+    except requests.exceptions.RequestException:
+        pass  # Cookie priming failing isn't fatal — the CSV request may still work.
+
+    for attempt in range(3):
+        try:
+            response = session.get(nifty500_url, timeout=30)
+            response.raise_for_status()
+            nifty500_df = pd.read_csv(io.StringIO(response.text))
+            if "Symbol" in nifty500_df.columns:
+                tickers = nifty500_df["Symbol"].tolist()
+                yf_tickers = [ticker + ".NS" for ticker in tickers]
+                print(f"Found {len(yf_tickers)} Nifty 500 constituents (NSE archives).")
+                return yf_tickers
+            print("Error: 'Symbol' column not found in Nifty 500 CSV.")
+            break
+        except requests.exceptions.RequestException as e:
+            print(f"Attempt {attempt + 1}/3 fetching NSE data failed: {e}")
+        except pd.errors.EmptyDataError:
+            print("Error: Nifty 500 CSV is empty.")
+            break
+
+    # Fallback: NSE is blocking us (common from cloud/CI IPs). Use a mirrored
+    # copy of the same constituent list so the run can still proceed.
+    print("Falling back to mirrored Nifty 500 list...")
+    try:
+        response = requests.get(fallback_url, timeout=30)
         response.raise_for_status()
         nifty500_df = pd.read_csv(io.StringIO(response.text))
         if "Symbol" in nifty500_df.columns:
             tickers = nifty500_df["Symbol"].tolist()
             yf_tickers = [ticker + ".NS" for ticker in tickers]
-            print(f"Found {len(yf_tickers)} Nifty 500 constituents.")
+            print(f"Found {len(yf_tickers)} Nifty 500 constituents (fallback mirror).")
             return yf_tickers
-        print("Error: 'Symbol' column not found in Nifty 500 CSV.")
+        print("Error: 'Symbol' column not found in fallback CSV.")
         return []
     except requests.exceptions.RequestException as e:
-        print(f"Error fetching Nifty 500 data: {e}")
+        print(f"Error fetching fallback Nifty 500 data: {e}")
         return []
     except pd.errors.EmptyDataError:
-        print("Error: Nifty 500 CSV is empty.")
+        print("Error: Fallback Nifty 500 CSV is empty.")
         return []
 
 
