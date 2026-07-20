@@ -46,75 +46,76 @@ TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
 # ---------------------------------------------------------------------------
 # NSE's servers block automated requests from cloud/CI IPs (GitHub Actions
 # included), so instead of fetching this list at runtime, it's embedded here
-# directly. Sourced from Wikipedia's Nifty 500 constituent table (Nov 2024).
+# directly. Sourced from NSE's official ind_nifty500list.csv (July 2026).
 #
 # NOTE: NSE rebalances this index twice a year (cut-off dates: 31 Jan and
-# 31 Jul). Refresh this list periodically — check
-# https://en.wikipedia.org/wiki/NIFTY_500 for the current constituents.
+# 31 Jul). Refresh this list periodically by downloading the latest CSV from
+# NSE (https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-500)
+# and regenerating this list.
 NIFTY_500_SYMBOLS = [
-    "360ONE", "3MINDIA", "ABB", "ACC", "AIAENG", "APLAPOLLO", "AUBANK", "AARTIIND",
-    "AAVAS", "ABBOTINDIA", "ACE", "ADANIENSOL", "ADANIENT", "ADANIGREEN", "ADANIPORTS", "ADANIPOWER",
-    "ATGL", "AWL", "ABCAPITAL", "ABFRL", "AEGISLOG", "AETHER", "AFFLE", "AJANTPHARM",
-    "APLLTD", "ALKEM", "ALKYLAMINE", "ALLCARGO", "ALOKINDS", "ARE&M", "AMBER", "AMBUJACEM",
-    "ANANDRATHI", "ANGELONE", "ANURAS", "APARINDS", "APOLLOHOSP", "APOLLOTYRE", "APTUS", "ACI",
-    "ASAHIINDIA", "ASHOKLEY", "ASIANPAINT", "ASTERDM", "ASTRAZEN", "ASTRAL", "ATUL", "AUROPHARMA",
-    "AVANTIFEED", "DMART", "AXISBANK", "BEML", "BLS", "BSE", "BAJAJ-AUTO", "BAJFINANCE",
-    "BAJAJFINSV", "BAJAJHLDNG", "BALAMINES", "BALKRISIND", "BALRAMCHIN", "BANDHANBNK", "BANKBARODA", "BANKINDIA",
-    "MAHABANK", "BATAINDIA", "BAYERCROP", "BERGEPAINT", "BDL", "BEL", "BHARATFORG", "BHEL",
-    "BPCL", "BHARTIARTL", "BIKAJI", "BIOCON", "BIRLACORPN", "BSOFT", "BLUEDART", "BLUESTARCO",
-    "BBTC", "BORORENEW", "BOSCHLTD", "BRIGADE", "BRITANNIA", "MAPMYINDIA", "CCL", "CESC",
-    "CGPOWER", "CIEINDIA", "CRISIL", "CSBBANK", "CAMPUS", "CANFINHOME", "CANBK", "CAPLIPOINT",
-    "CGCL", "CARBORUNIV", "CASTROLIND", "CEATLTD", "CELLO", "CENTRALBK", "CDSL", "CENTURYPLY",
-    "ABREL", "CERA", "CHALET", "CHAMBLFERT", "CHEMPLASTS", "CHENNPETRO", "CHOLAHLDNG", "CHOLAFIN",
-    "CIPLA", "CUB", "CLEAN", "COALINDIA", "COCHINSHIP", "COFORGE", "COLPAL", "CAMS",
-    "CONCORDBIO", "CONCOR", "COROMANDEL", "CRAFTSMAN", "CREDITACC", "CROMPTON", "CUMMINSIND", "CYIENT",
-    "DCMSHRIRAM", "DLF", "DOMS", "DABUR", "DALBHARAT", "DATAPATTNS", "DEEPAKFERT", "DEEPAKNTR",
-    "DELHIVERY", "DEVYANI", "DIVISLAB", "DIXON", "LALPATHLAB", "DRREDDY", "EIDPARRY", "EIHOTEL",
-    "EPL", "EASEMYTRIP", "EICHERMOT", "ELECON", "ELGIEQUIP", "EMAMILTD", "ENDURANCE", "ENGINERSIN",
-    "EQUITASBNK", "ERIS", "ESCORTS", "EXIDEIND", "FDC", "NYKAA", "FEDERALBNK", "FACT",
-    "FINEORG", "FINCABLES", "FINPIPE", "FSL", "FIVESTAR", "FORTIS", "GAIL", "GMMPFAUDLR",
-    "GMRINFRASTRUCT", "GRSE", "GICRE", "GILLETTE", "GLAND", "GLAXO", "ALIVUS", "GLENMARK",
-    "MEDANTA", "GPIL", "GODFRYPHLP", "GODREJCP", "GODREJIND", "GODREJPROP", "GRANULES", "GRAPHITE",
-    "GRASIM", "GESHIP", "GRINDWELL", "GAEL", "FLUOROCHEM", "GUJGASLTD", "GMDCLTD", "GNFC",
-    "GPPL", "GSFC", "GSPL", "HEG", "HBLENGINE", "HCLTECH", "HDFCAMC", "HDFCBANK",
-    "HDFCLIFE", "HFCL", "HAPPSTMNDS", "HAPPYFORGE", "HAVELLS", "HEROMOTOCO", "HSCL", "HINDALCO",
-    "HAL", "HINDCOPPER", "HINDPETRO", "HINDUNILVR", "HINDZINC", "POWERINDIA", "HOMEFIRST", "HONASA",
-    "HONAUT", "HUDCO", "ICICIBANK", "ICICIGI", "ICICIPRULI", "ISEC", "IDBI", "IDFCFIRSTB",
-    "IFCI", "IIFL", "IRB", "IRCON", "ITC", "ITI", "INDIACEM", "INDIAMART",
-    "INDIANB", "IEX", "INDHOTEL", "IOC", "IOB", "IRCTC", "IRFC", "INDIGOPNTS",
-    "IGL", "INDUSTOWER", "INDUSINDBK", "NAUKRI", "INFY", "INOXWIND", "INTELLECT", "INDIGO",
-    "IPCALAB", "JBCHEPHARM", "JKCEMENT", "JBMA", "JKLAKSHMI", "JKPAPER", "JMFINANCIL", "JSWENERGY",
-    "JSWINFRA", "JSWSTEEL", "JAIBALAJI", "J&KBANK", "JINDALSAW", "JSL", "JINDALSTEL", "JIOFIN",
-    "JUBLFOOD", "JUBLINGREA", "JUBLPHARMA", "JWL", "JUSTDIAL", "JYOTHYLAB", "KPRMILL", "KEI",
-    "KNRCON", "KPITTECH", "KRBL", "KSB", "KAJARIACER", "KPIL", "KALYANKJIL", "KANSAINER",
-    "KARURVYSYA", "KAYNES", "KEC", "KFINTECH", "KOTAKBANK", "KIMS", "LTF", "LTTS",
-    "LICHSGFIN", "LTIM", "LT", "LATENTVIEW", "LAURUSLABS", "LXCHEM", "LEMONTREE", "LICI",
-    "LINDEINDIA", "LLOYDSME", "LUPIN", "MMTC", "MRF", "MTARTECH", "LODHA", "MGL",
-    "MAHSEAMLES", "M&MFIN", "M&M", "MHRIL", "MAHLIFE", "MANAPPURAM", "MRPL", "MANKIND",
-    "MARICO", "MARUTI", "MASTEK", "MFSL", "MAXHEALTH", "MAZDOCK", "MEDPLUS", "METROBRAND",
-    "METROPOLIS", "MINDACORP", "MSUMI", "MOTILALOFS", "MPHASIS", "MCX", "MUTHOOTFIN", "NATCOPHARM",
-    "NBCC", "NCC", "NHPC", "NLCINDIA", "NMDC", "NSLNISP", "NTPC", "NH",
-    "NATIONALUM", "NAVINFLUOR", "NESTLEIND", "NETWORK18", "NAM-INDIA", "NUVAMA", "NUVOCO", "OBEROIRLTY",
-    "ONGC", "OIL", "OLECTRA", "PAYTM", "OFSS", "POLICYBZR", "PCBL", "PIIND",
-    "PNBHOUSING", "PNCINFRA", "PVRINOX", "PAGEIND", "PATANJALI", "PERSISTENT", "PETRONET", "PHOENIXLTD",
-    "PIDILITIND", "PEL", "PPLPHARMA", "POLYMED", "POLYCAB", "POONAWALLA", "PFC", "POWERGRID",
-    "PRAJIND", "PRESTIGE", "PRINCEPIPE", "PRSMJOHNSN", "PGHH", "PNB", "QUESS", "RRKABEL",
+    "360ONE", "3MINDIA", "ABB", "ACC", "ACMESOLAR", "AIAENG", "APLAPOLLO", "AUBANK",
+    "AWL", "AADHARHFC", "AARTIIND", "AAVAS", "ABBOTINDIA", "ACE", "ACUTAAS", "ADANIENSOL",
+    "ADANIENT", "ADANIGREEN", "ADANIPORTS", "ADANIPOWER", "ATGL", "ABCAPITAL", "ABFRL", "ABLBL",
+    "ABREL", "ABSLAMC", "CPPLUS", "AEGISLOG", "AEGISVOPAK", "AFCONS", "AFFLE", "AJANTPHARM",
+    "ALKEM", "ABDL", "ARE&M", "AMBER", "AMBUJACEM", "ANANDRATHI", "ANANTRAJ", "ANGELONE",
+    "ANTHEM", "ANURAS", "APARINDS", "APOLLOHOSP", "APOLLOTYRE", "APTUS", "ASAHIINDIA", "ASHOKLEY",
+    "ASIANPAINT", "ASTERDM", "ASTRAL", "ATHERENERG", "ATUL", "AUROPHARMA", "AIIL", "DMART",
+    "AXISBANK", "BEML", "BLS", "BSE", "BAJAJ-AUTO", "BAJFINANCE", "BAJAJFINSV", "BAJAJHLDNG",
+    "BAJAJHFL", "BALKRISIND", "BALRAMCHIN", "BANDHANBNK", "BANKBARODA", "BANKINDIA", "MAHABANK", "BATAINDIA",
+    "BAYERCROP", "BELRISE", "BERGEPAINT", "BDL", "BEL", "BHARATFORG", "BHEL", "BPCL",
+    "BHARTIARTL", "BHARTIHEXA", "BIKAJI", "GROWW", "BIOCON", "BSOFT", "BLUEDART", "BLUEJET",
+    "BLUESTARCO", "BBTC", "BOSCHLTD", "FIRSTCRY", "BRIGADE", "BRITANNIA", "MAPMYINDIA", "CCL",
+    "CESC", "CGPOWER", "CIEINDIA", "CRISIL", "CANFINHOME", "CANBK", "CANHLIFE", "CAPLIPOINT",
+    "CGCL", "CARBORUNIV", "CARTRADE", "CASTROLIND", "CEATLTD", "CEMPRO", "CENTRALBK", "CDSL",
+    "CHALET", "CHAMBLFERT", "CHENNPETRO", "CHOICEIN", "CHOLAHLDNG", "CHOLAFIN", "CIPLA", "CUB",
+    "CLEAN", "COALINDIA", "COCHINSHIP", "COFORGE", "COHANCE", "COLPAL", "CAMS", "CONCORDBIO",
+    "CONCOR", "COROMANDEL", "CRAFTSMAN", "CREDITACC", "CROMPTON", "CUMMINSIND", "CYIENT", "DCMSHRIRAM",
+    "DLF", "DOMS", "DABUR", "DALBHARAT", "DATAPATTNS", "DEEPAKFERT", "DEEPAKNTR", "DELHIVERY",
+    "DEVYANI", "DIVISLAB", "DIXON", "LALPATHLAB", "DRREDDY", "EIDPARRY", "EIHOTEL", "EICHERMOT",
+    "ELECON", "ELGIEQUIP", "EMAMILTD", "EMCURE", "EMMVEE", "ENDURANCE", "ENGINERSIN", "ERIS",
+    "ESCORTS", "ETERNAL", "EXIDEIND", "NYKAA", "FEDERALBNK", "FACT", "FINCABLES", "FSL",
+    "FIVESTAR", "FORCEMOT", "FORTIS", "GAIL", "GVT&D", "GMRAIRPORT", "GABRIEL", "GALLANTT",
+    "GRSE", "GICRE", "GILLETTE", "GLAND", "GLAXO", "GLENMARK", "MEDANTA", "GODIGIT",
+    "GPIL", "GODFRYPHLP", "GODREJCP", "GODREJIND", "GODREJPROP", "GRANULES", "GRAPHITE", "GRASIM",
+    "GRAVITA", "GESHIP", "FLUOROCHEM", "GMDCLTD", "HEG", "HBLENGINE", "HCLTECH", "HDBFS",
+    "HDFCAMC", "HDFCBANK", "HDFCLIFE", "HFCL", "HAVELLS", "HEROMOTOCO", "HEXT", "HSCL",
+    "HINDALCO", "HAL", "HINDCOPPER", "HINDPETRO", "HINDUNILVR", "HINDZINC", "POWERINDIA", "HOMEFIRST",
+    "HONASA", "HONAUT", "HUDCO", "HYUNDAI", "ICICIBANK", "ICICIGI", "ICICIAMC", "ICICIPRULI",
+    "IDBI", "IDFCFIRSTB", "IFCI", "IIFL", "IRB", "IRCON", "ITCHOTELS", "ITC",
+    "ITI", "INDGN", "INDIACEM", "INDIAMART", "INDIANB", "IEX", "INDHOTEL", "IOC",
+    "IOB", "IRCTC", "IRFC", "IREDA", "IGL", "INDUSTOWER", "INDUSINDBK", "NAUKRI",
+    "INFY", "INOXWIND", "INTELLECT", "INDIGO", "IGIL", "IKS", "IPCALAB", "JKCEMENT",
+    "JBMA", "JKTYRE", "JMFINANCIL", "JSWCEMENT", "JSWDULUX", "JSWENERGY", "JSWINFRA", "JSWSTEEL",
+    "JAINREC", "JPPOWER", "J&KBANK", "JINDALSAW", "JSL", "JINDALSTEL", "JIOFIN", "JUBLFOOD",
+    "JUBLINGREA", "JUBLPHARMA", "JWL", "JYOTICNC", "KPRMILL", "KEI", "KPITTECH", "KAJARIACER",
+    "KPIL", "KALYANKJIL", "KARURVYSYA", "KAYNES", "KEC", "KFINTECH", "KIRLOSENG", "KOTAKBANK",
+    "KIMS", "LTF", "LTTS", "LGEINDIA", "LICHSGFIN", "LTFOODS", "LTM", "LT",
+    "LATENTVIEW", "LAURUSLABS", "THELEELA", "LEMONTREE", "LENSKART", "LICI", "LINDEINDIA", "LLOYDSME",
+    "LODHA", "LUPIN", "MMTC", "MRF", "MGL", "M&MFIN", "M&M", "MANAPPURAM",
+    "MRPL", "MANKIND", "MARICO", "MARUTI", "MFSL", "MAXHEALTH", "MAZDOCK", "MEESHO",
+    "MINDACORP", "MSUMI", "MOTILALOFS", "MPHASIS", "MCX", "MUTHOOTFIN", "NATCOPHARM", "NBCC",
+    "NCC", "NHPC", "NLCINDIA", "NMDC", "NSLNISP", "NTPCGREEN", "NTPC", "NH",
+    "NATIONALUM", "NAVA", "NAVINFLUOR", "NESTLEIND", "NETWEB", "NEULANDLAB", "NEWGEN", "NAM-INDIA",
+    "NIVABUPA", "NUVAMA", "NUVOCO", "OBEROIRLTY", "ONGC", "OIL", "OLAELEC", "OLECTRA",
+    "PAYTM", "ONESOURCE", "OFSS", "POLICYBZR", "PCBL", "PGEL", "PIIND", "PNBHOUSING",
+    "PTCIL", "PVRINOX", "PAGEIND", "PARADEEP", "PATANJALI", "PERSISTENT", "PETRONET", "PFIZER",
+    "PHOENIXLTD", "PWL", "PIDILITIND", "PINELABS", "PIRAMALFIN", "PPLPHARMA", "POLYMED", "POLYCAB",
+    "POONAWALLA", "PFC", "POWERGRID", "PREMIERENE", "PRESTIGE", "PFOCUS", "PNB", "RRKABEL",
     "RBLBANK", "RECLTD", "RHIM", "RITES", "RADICO", "RVNL", "RAILTEL", "RAINBOW",
-    "RAJESHEXPO", "RKFORGE", "RCF", "RATNAMANI", "RTNINDIA", "RAYMOND", "REDINGTON", "RELIANCE",
-    "RBA", "ROUTE", "SBFC", "SBICARD", "SBILIFE", "SJVN", "SKFINDIA", "SRF",
-    "SAFARI", "SAMMAANCAP", "MOTHERSON", "SANOFI", "SAPPHIRE", "SAREGAMA", "SCHAEFFLER", "SCHNEIDER",
-    "SHREECEM", "RENUKA", "SHRIRAMFIN", "SHYAMMETL", "SIEMENS", "SIGNATURE", "SOBHA", "SOLARINDS",
-    "SONACOMS", "SONATSOFTW", "STARHEALTH", "SBIN", "SAIL", "SWSOLAR", "STLTECH", "SUMICHEM",
-    "SPARC", "SUNPHARMA", "SUNTV", "SUNDARMFIN", "SUNDRMFAST", "SUNTECK", "SUPREMEIND", "SUVENPHAR",
-    "SUZLON", "SWANENERGY", "SYNGENE", "SYRMA", "TBOTEK", "TVSMOTOR", "TVSSCS", "TMB",
-    "TANLA", "TATACHEM", "TATACOMM", "TCS", "TATACONSUM", "TATAELXSI", "TATAINVEST", "TATAMOTORS",
-    "TATAPOWER", "TATASTEEL", "TATATECH", "TTML", "TECHM", "TEJASNET", "NIACL", "RAMCOCEM",
-    "THERMAX", "TIMKEN", "TITAGARH", "TITAN", "TORNTPHARM", "TORNTPOWER", "TRENT", "TRIDENT",
-    "TRIVENI", "TRITURBINE", "TIINDIA", "UCOBANK", "UNOMINDA", "UPL", "UTIAMC", "UJJIVANSFB",
-    "ULTRACEMCO", "UNIONBANK", "UBL", "UNITDSPR", "USHAMART", "VGUARD", "VIPIND", "VAIBHAVGBL",
-    "VTL", "VARROC", "VBL", "MANYAVAR", "VEDL", "VIJAYA", "IDEA", "VOLTAS",
-    "WELCORP", "WELSPUNLIV", "WESTLIFE", "WHIRLPOOL", "WIPRO", "YESBANK", "ZFCVINDIA", "ZEEL",
-    "ZENSARTECH", "ETERNAL", "ZYDUSLIFE", "ECLERX",
+    "RKFORGE", "REDINGTON", "RELIANCE", "RPOWER", "SBFC", "SBICARD", "SBILIFE", "SJVN",
+    "SRF", "SAGILITY", "SAILIFE", "SAMMAANCAP", "MOTHERSON", "SAPPHIRE", "SARDAEN", "SAREGAMA",
+    "SCHAEFFLER", "SCHNEIDER", "SCI", "SHREECEM", "SHRIRAMFIN", "SHYAMMETL", "ENRIN", "SIEMENS",
+    "SIGNATURE", "SOBHA", "SOLARINDS", "SONACOMS", "SONATSOFTW", "STARHEALTH", "SBIN", "SAIL",
+    "SUMICHEM", "SUNPHARMA", "SUNTV", "SUNDARMFIN", "SUPREMEIND", "SPLPETRO", "SUZLON", "SWANCORP",
+    "SWIGGY", "SYNGENE", "SYRMA", "TBOTEK", "TVSMOTOR", "TATACAP", "TATACHEM", "TATACOMM",
+    "TCS", "TATACONSUM", "TATAELXSI", "TATAINVEST", "TMCV", "TMPV", "TATAPOWER", "TATASTEEL",
+    "TATATECH", "TTML", "TECHM", "TECHNOE", "TEGA", "TEJASNET", "TENNIND", "NIACL",
+    "RAMCOCEM", "THERMAX", "TIMKEN", "TITAGARH", "TITAN", "TORNTPHARM", "TORNTPOWER", "TARIL",
+    "TRAVELFOOD", "TRENT", "TRIDENT", "TRITURBINE", "TIINDIA", "UCOBANK", "UNOMINDA", "UPL",
+    "UTIAMC", "ULTRACEMCO", "UNIONBANK", "UBL", "UNITDSPR", "URBANCO", "USHAMART", "VTL",
+    "VBL", "VEDL", "VIJAYA", "VMM", "IDEA", "VOLTAS", "WAAREEENER", "WELCORP",
+    "WELSPUNLIV", "WHIRLPOOL", "WIPRO", "WOCKPHARMA", "YESBANK", "ZFCVINDIA", "ZEEL", "ZENTEC",
+    "ZENSARTECH", "ZYDUSLIFE", "ZYDUSWELL", "ECLERX",
 ]
 
 
@@ -350,10 +351,31 @@ def format_defensive_message():
     )
 
 
+def format_unfiltered_message(momentum_df, market_status):
+    """Message 1: top momentum stocks BEFORE breakout/volatility filters."""
+    regime_note = "⚠️ Regime: SELL (defensive)" if market_status == "SELL" else "✅ Regime: BUY"
+    ranked = momentum_df.sort_values(by="Momentum_Score", ascending=False).reset_index(drop=True)
+    lines = [
+        "*📊 Momentum Scan — WITHOUT Filters*",
+        f"_{regime_note}_",
+        f"_Top {len(ranked)} stocks by 1-month momentum (price > ₹100 only)_",
+        "",
+    ]
+    for i, row in ranked.iterrows():
+        lines.append(
+            f"{i + 1}. *{row['Ticker']}* — "
+            f"{row['Momentum_Score'] * 100:.2f}% | ₹{row['Latest_Close']:.2f}"
+        )
+    lines.append("")
+    lines.append(f"_Generated at {datetime.now().strftime('%Y-%m-%d %H:%M')}_")
+    return "\n".join(lines)
+
+
 def format_shortlist_message(final_df, market_status):
+    """Message 2: final shortlist AFTER breakout + volatility filters."""
     regime_note = "⚠️ Regime: SELL (defensive)" if market_status == "SELL" else "✅ Regime: BUY"
     lines = [
-        "*📈 7-Stock Momentum Breakout Shortlist*",
+        "*📈 Momentum Scan — WITH Filters (Breakout + Volatility)*",
         f"_{regime_note}_",
         f"_Capital: ₹{CAPITAL:,} | Allocation/stock: ₹{ALLOCATION_PER_STOCK:,.2f}_",
         "",
@@ -406,6 +428,15 @@ def main():
         send_telegram_message(format_no_stocks_message(market_status))
         return
 
+    print("\nTop momentum stocks (before filters):")
+    print(
+        momentum_shortlist_df[["Ticker", "Momentum_Score", "Latest_Close"]].to_markdown(
+            index=False
+        )
+    )
+    # Message 1: send the unfiltered top-momentum list immediately.
+    send_telegram_message(format_unfiltered_message(momentum_shortlist_df, market_status))
+
     breakout_filtered_df = apply_price_breakout_filter(momentum_shortlist_df)
     if breakout_filtered_df.empty:
         send_telegram_message(format_no_stocks_message(market_status))
@@ -421,13 +452,14 @@ def main():
         send_telegram_message(format_no_stocks_message(market_status))
         return
 
-    print("\nFinal Shortlist:")
+    print("\nFinal Shortlist (after filters):")
     print(
         final_df[
             ["Ticker", "Momentum_Score", "Latest_Close", "Volatility_Pct", "Shares_To_Buy"]
         ].to_markdown(index=False)
     )
 
+    # Message 2: send the final filtered shortlist.
     send_telegram_message(format_shortlist_message(final_df, market_status))
 
 
