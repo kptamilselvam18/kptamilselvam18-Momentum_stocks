@@ -41,6 +41,82 @@ ALLOCATION_PER_STOCK = CAPITAL / NUM_STOCKS
 TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
 
+# ---------------------------------------------------------------------------
+# NIFTY 500 CONSTITUENTS (static list)
+# ---------------------------------------------------------------------------
+# NSE's servers block automated requests from cloud/CI IPs (GitHub Actions
+# included), so instead of fetching this list at runtime, it's embedded here
+# directly. Sourced from Wikipedia's Nifty 500 constituent table (Nov 2024).
+#
+# NOTE: NSE rebalances this index twice a year (cut-off dates: 31 Jan and
+# 31 Jul). Refresh this list periodically — check
+# https://en.wikipedia.org/wiki/NIFTY_500 for the current constituents.
+NIFTY_500_SYMBOLS = [
+    "360ONE", "3MINDIA", "ABB", "ACC", "AIAENG", "APLAPOLLO", "AUBANK", "AARTIIND",
+    "AAVAS", "ABBOTINDIA", "ACE", "ADANIENSOL", "ADANIENT", "ADANIGREEN", "ADANIPORTS", "ADANIPOWER",
+    "ATGL", "AWL", "ABCAPITAL", "ABFRL", "AEGISLOG", "AETHER", "AFFLE", "AJANTPHARM",
+    "APLLTD", "ALKEM", "ALKYLAMINE", "ALLCARGO", "ALOKINDS", "ARE&M", "AMBER", "AMBUJACEM",
+    "ANANDRATHI", "ANGELONE", "ANURAS", "APARINDS", "APOLLOHOSP", "APOLLOTYRE", "APTUS", "ACI",
+    "ASAHIINDIA", "ASHOKLEY", "ASIANPAINT", "ASTERDM", "ASTRAZEN", "ASTRAL", "ATUL", "AUROPHARMA",
+    "AVANTIFEED", "DMART", "AXISBANK", "BEML", "BLS", "BSE", "BAJAJ-AUTO", "BAJFINANCE",
+    "BAJAJFINSV", "BAJAJHLDNG", "BALAMINES", "BALKRISIND", "BALRAMCHIN", "BANDHANBNK", "BANKBARODA", "BANKINDIA",
+    "MAHABANK", "BATAINDIA", "BAYERCROP", "BERGEPAINT", "BDL", "BEL", "BHARATFORG", "BHEL",
+    "BPCL", "BHARTIARTL", "BIKAJI", "BIOCON", "BIRLACORPN", "BSOFT", "BLUEDART", "BLUESTARCO",
+    "BBTC", "BORORENEW", "BOSCHLTD", "BRIGADE", "BRITANNIA", "MAPMYINDIA", "CCL", "CESC",
+    "CGPOWER", "CIEINDIA", "CRISIL", "CSBBANK", "CAMPUS", "CANFINHOME", "CANBK", "CAPLIPOINT",
+    "CGCL", "CARBORUNIV", "CASTROLIND", "CEATLTD", "CELLO", "CENTRALBK", "CDSL", "CENTURYPLY",
+    "ABREL", "CERA", "CHALET", "CHAMBLFERT", "CHEMPLASTS", "CHENNPETRO", "CHOLAHLDNG", "CHOLAFIN",
+    "CIPLA", "CUB", "CLEAN", "COALINDIA", "COCHINSHIP", "COFORGE", "COLPAL", "CAMS",
+    "CONCORDBIO", "CONCOR", "COROMANDEL", "CRAFTSMAN", "CREDITACC", "CROMPTON", "CUMMINSIND", "CYIENT",
+    "DCMSHRIRAM", "DLF", "DOMS", "DABUR", "DALBHARAT", "DATAPATTNS", "DEEPAKFERT", "DEEPAKNTR",
+    "DELHIVERY", "DEVYANI", "DIVISLAB", "DIXON", "LALPATHLAB", "DRREDDY", "EIDPARRY", "EIHOTEL",
+    "EPL", "EASEMYTRIP", "EICHERMOT", "ELECON", "ELGIEQUIP", "EMAMILTD", "ENDURANCE", "ENGINERSIN",
+    "EQUITASBNK", "ERIS", "ESCORTS", "EXIDEIND", "FDC", "NYKAA", "FEDERALBNK", "FACT",
+    "FINEORG", "FINCABLES", "FINPIPE", "FSL", "FIVESTAR", "FORTIS", "GAIL", "GMMPFAUDLR",
+    "GMRINFRASTRUCT", "GRSE", "GICRE", "GILLETTE", "GLAND", "GLAXO", "ALIVUS", "GLENMARK",
+    "MEDANTA", "GPIL", "GODFRYPHLP", "GODREJCP", "GODREJIND", "GODREJPROP", "GRANULES", "GRAPHITE",
+    "GRASIM", "GESHIP", "GRINDWELL", "GAEL", "FLUOROCHEM", "GUJGASLTD", "GMDCLTD", "GNFC",
+    "GPPL", "GSFC", "GSPL", "HEG", "HBLENGINE", "HCLTECH", "HDFCAMC", "HDFCBANK",
+    "HDFCLIFE", "HFCL", "HAPPSTMNDS", "HAPPYFORGE", "HAVELLS", "HEROMOTOCO", "HSCL", "HINDALCO",
+    "HAL", "HINDCOPPER", "HINDPETRO", "HINDUNILVR", "HINDZINC", "POWERINDIA", "HOMEFIRST", "HONASA",
+    "HONAUT", "HUDCO", "ICICIBANK", "ICICIGI", "ICICIPRULI", "ISEC", "IDBI", "IDFCFIRSTB",
+    "IFCI", "IIFL", "IRB", "IRCON", "ITC", "ITI", "INDIACEM", "INDIAMART",
+    "INDIANB", "IEX", "INDHOTEL", "IOC", "IOB", "IRCTC", "IRFC", "INDIGOPNTS",
+    "IGL", "INDUSTOWER", "INDUSINDBK", "NAUKRI", "INFY", "INOXWIND", "INTELLECT", "INDIGO",
+    "IPCALAB", "JBCHEPHARM", "JKCEMENT", "JBMA", "JKLAKSHMI", "JKPAPER", "JMFINANCIL", "JSWENERGY",
+    "JSWINFRA", "JSWSTEEL", "JAIBALAJI", "J&KBANK", "JINDALSAW", "JSL", "JINDALSTEL", "JIOFIN",
+    "JUBLFOOD", "JUBLINGREA", "JUBLPHARMA", "JWL", "JUSTDIAL", "JYOTHYLAB", "KPRMILL", "KEI",
+    "KNRCON", "KPITTECH", "KRBL", "KSB", "KAJARIACER", "KPIL", "KALYANKJIL", "KANSAINER",
+    "KARURVYSYA", "KAYNES", "KEC", "KFINTECH", "KOTAKBANK", "KIMS", "LTF", "LTTS",
+    "LICHSGFIN", "LTIM", "LT", "LATENTVIEW", "LAURUSLABS", "LXCHEM", "LEMONTREE", "LICI",
+    "LINDEINDIA", "LLOYDSME", "LUPIN", "MMTC", "MRF", "MTARTECH", "LODHA", "MGL",
+    "MAHSEAMLES", "M&MFIN", "M&M", "MHRIL", "MAHLIFE", "MANAPPURAM", "MRPL", "MANKIND",
+    "MARICO", "MARUTI", "MASTEK", "MFSL", "MAXHEALTH", "MAZDOCK", "MEDPLUS", "METROBRAND",
+    "METROPOLIS", "MINDACORP", "MSUMI", "MOTILALOFS", "MPHASIS", "MCX", "MUTHOOTFIN", "NATCOPHARM",
+    "NBCC", "NCC", "NHPC", "NLCINDIA", "NMDC", "NSLNISP", "NTPC", "NH",
+    "NATIONALUM", "NAVINFLUOR", "NESTLEIND", "NETWORK18", "NAM-INDIA", "NUVAMA", "NUVOCO", "OBEROIRLTY",
+    "ONGC", "OIL", "OLECTRA", "PAYTM", "OFSS", "POLICYBZR", "PCBL", "PIIND",
+    "PNBHOUSING", "PNCINFRA", "PVRINOX", "PAGEIND", "PATANJALI", "PERSISTENT", "PETRONET", "PHOENIXLTD",
+    "PIDILITIND", "PEL", "PPLPHARMA", "POLYMED", "POLYCAB", "POONAWALLA", "PFC", "POWERGRID",
+    "PRAJIND", "PRESTIGE", "PRINCEPIPE", "PRSMJOHNSN", "PGHH", "PNB", "QUESS", "RRKABEL",
+    "RBLBANK", "RECLTD", "RHIM", "RITES", "RADICO", "RVNL", "RAILTEL", "RAINBOW",
+    "RAJESHEXPO", "RKFORGE", "RCF", "RATNAMANI", "RTNINDIA", "RAYMOND", "REDINGTON", "RELIANCE",
+    "RBA", "ROUTE", "SBFC", "SBICARD", "SBILIFE", "SJVN", "SKFINDIA", "SRF",
+    "SAFARI", "SAMMAANCAP", "MOTHERSON", "SANOFI", "SAPPHIRE", "SAREGAMA", "SCHAEFFLER", "SCHNEIDER",
+    "SHREECEM", "RENUKA", "SHRIRAMFIN", "SHYAMMETL", "SIEMENS", "SIGNATURE", "SOBHA", "SOLARINDS",
+    "SONACOMS", "SONATSOFTW", "STARHEALTH", "SBIN", "SAIL", "SWSOLAR", "STLTECH", "SUMICHEM",
+    "SPARC", "SUNPHARMA", "SUNTV", "SUNDARMFIN", "SUNDRMFAST", "SUNTECK", "SUPREMEIND", "SUVENPHAR",
+    "SUZLON", "SWANENERGY", "SYNGENE", "SYRMA", "TBOTEK", "TVSMOTOR", "TVSSCS", "TMB",
+    "TANLA", "TATACHEM", "TATACOMM", "TCS", "TATACONSUM", "TATAELXSI", "TATAINVEST", "TATAMOTORS",
+    "TATAPOWER", "TATASTEEL", "TATATECH", "TTML", "TECHM", "TEJASNET", "NIACL", "RAMCOCEM",
+    "THERMAX", "TIMKEN", "TITAGARH", "TITAN", "TORNTPHARM", "TORNTPOWER", "TRENT", "TRIDENT",
+    "TRIVENI", "TRITURBINE", "TIINDIA", "UCOBANK", "UNOMINDA", "UPL", "UTIAMC", "UJJIVANSFB",
+    "ULTRACEMCO", "UNIONBANK", "UBL", "UNITDSPR", "USHAMART", "VGUARD", "VIPIND", "VAIBHAVGBL",
+    "VTL", "VARROC", "VBL", "MANYAVAR", "VEDL", "VIJAYA", "IDEA", "VOLTAS",
+    "WELCORP", "WELSPUNLIV", "WESTLIFE", "WHIRLPOOL", "WIPRO", "YESBANK", "ZFCVINDIA", "ZEEL",
+    "ZENSARTECH", "ETERNAL", "ZYDUSLIFE", "ECLERX",
+]
+
 
 # ---------------------------------------------------------------------------
 # 1. MARKET REGIME CHECK (The Master Switch)
@@ -77,96 +153,9 @@ def check_market_regime():
 # 2. MOMENTUM RANKING ENGINE
 # ---------------------------------------------------------------------------
 def get_nifty500_tickers():
-    print("Fetching Nifty 500 constituents...")
-
-    headers = {
-        "User-Agent": (
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-            "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
-        ),
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "Accept-Language": "en-US,en;q=0.9",
-        "Referer": "https://www.nseindia.com/market-data/live-equity-market",
-        "Connection": "keep-alive",
-    }
-
-    nifty500_url = "https://archives.nseindia.com/content/indices/ind_nifty500list.csv"
-    fallback_url = (
-        "https://raw.githubusercontent.com/kprohith/nse-stock-analysis/"
-        "master/ind_nifty500list.csv"
-    )
-
-    session = requests.Session()
-    session.headers.update(headers)
-
-    # Prime cookies by visiting the main site first, then the indices page,
-    # since NSE's servers reject requests that don't look like a real browser.
-    try:
-        session.get("https://www.nseindia.com", timeout=15)
-        session.get("https://www.nseindia.com/market-data/live-equity-market", timeout=15)
-    except requests.exceptions.RequestException:
-        pass  # Cookie priming failing isn't fatal — the CSV request may still work.
-
-    for attempt in range(3):
-        try:
-            response = session.get(nifty500_url, timeout=30)
-            response.raise_for_status()
-            nifty500_df = pd.read_csv(io.StringIO(response.text))
-            if "Symbol" in nifty500_df.columns:
-                tickers = nifty500_df["Symbol"].tolist()
-                yf_tickers = [ticker + ".NS" for ticker in tickers]
-                print(f"Found {len(yf_tickers)} Nifty 500 constituents (NSE archives).")
-                return yf_tickers
-            print("Error: 'Symbol' column not found in Nifty 500 CSV.")
-            break
-        except requests.exceptions.RequestException as e:
-            print(f"Attempt {attempt + 1}/3 fetching NSE data failed: {e}")
-        except pd.errors.EmptyDataError:
-            print("Error: Nifty 500 CSV is empty.")
-            break
-
-    # Fallback 1: NSE is blocking us (common from cloud/CI IPs). Try Wikipedia's
-    # Nifty 500 constituent table — it isn't blocked by anti-bot protection and
-    # is reasonably current (periodically updated by editors).
-    print("Falling back to Wikipedia's Nifty 500 list...")
-    try:
-        wiki_headers = {"User-Agent": "Mozilla/5.0 (compatible; MomentumBot/1.0)"}
-        resp = requests.get(
-            "https://en.wikipedia.org/wiki/NIFTY_500", headers=wiki_headers, timeout=30
-        )
-        resp.raise_for_status()
-        tables = pd.read_html(io.StringIO(resp.text), match="Symbol")
-        for table in tables:
-            if "Symbol" in table.columns and len(table) > 100:
-                tickers = table["Symbol"].dropna().astype(str).str.strip().tolist()
-                yf_tickers = [t + ".NS" for t in tickers if t]
-                print(f"Found {len(yf_tickers)} Nifty 500 constituents (Wikipedia).")
-                return yf_tickers
-        print("Error: Could not locate Nifty 500 table on Wikipedia.")
-    except Exception as e:
-        print(f"Error fetching Wikipedia Nifty 500 data: {e}")
-
-    # Fallback 2: last resort — a community-maintained GitHub mirror. May lag
-    # behind current constituents (delisted/renamed tickers), but keeps the
-    # run alive rather than failing outright.
-    print("Falling back to mirrored Nifty 500 list...")
-    try:
-        response = requests.get(fallback_url, timeout=30)
-        response.raise_for_status()
-        nifty500_df = pd.read_csv(io.StringIO(response.text))
-        if "Symbol" in nifty500_df.columns:
-            tickers = nifty500_df["Symbol"].tolist()
-            yf_tickers = [ticker + ".NS" for ticker in tickers]
-            print(f"Found {len(yf_tickers)} Nifty 500 constituents (fallback mirror).")
-            return yf_tickers
-        print("Error: 'Symbol' column not found in fallback CSV.")
-        return []
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching fallback Nifty 500 data: {e}")
-        return []
-    except pd.errors.EmptyDataError:
-        print("Error: Fallback Nifty 500 CSV is empty.")
-        return []
+    print(f"Using embedded Nifty 500 list ({len(NIFTY_500_SYMBOLS)} symbols).")
+    yf_tickers = [symbol + ".NS" for symbol in NIFTY_500_SYMBOLS]
+    return yf_tickers
 
 
 def calculate_momentum_scores(tickers):
