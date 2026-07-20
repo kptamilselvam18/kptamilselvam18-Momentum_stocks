@@ -290,9 +290,11 @@ def format_defensive_message():
     )
 
 
-def format_shortlist_message(final_df):
+def format_shortlist_message(final_df, market_status):
+    regime_note = "⚠️ Regime: SELL (defensive)" if market_status == "SELL" else "✅ Regime: BUY"
     lines = [
         "*📈 7-Stock Momentum Breakout Shortlist*",
+        f"_{regime_note}_",
         f"_Capital: ₹{CAPITAL:,} | Allocation/stock: ₹{ALLOCATION_PER_STOCK:,.2f}_",
         "",
     ]
@@ -308,9 +310,11 @@ def format_shortlist_message(final_df):
     return "\n".join(lines)
 
 
-def format_no_stocks_message():
+def format_no_stocks_message(market_status="BUY"):
+    regime_note = "⚠️ Regime: SELL (defensive)" if market_status == "SELL" else "✅ Regime: BUY"
     return (
         "*ℹ️ Momentum Scan Complete*\n"
+        f"_{regime_note}_\n"
         "No stocks passed all filters today. No trades recommended.\n\n"
         f"_Checked at {datetime.now().strftime('%Y-%m-%d %H:%M')}_"
     )
@@ -330,8 +334,7 @@ def main():
         sys.exit(1)
 
     if market_status == "SELL":
-        send_telegram_message(format_defensive_message())
-        return
+        print("\n[!] DEFENSIVE MODE ACTIVE — regime is SELL, but continuing to screen stocks anyway.")
 
     nifty500_tickers = get_nifty500_tickers()
     if not nifty500_tickers:
@@ -340,22 +343,22 @@ def main():
 
     momentum_shortlist_df = calculate_momentum_scores(nifty500_tickers)
     if momentum_shortlist_df.empty:
-        send_telegram_message(format_no_stocks_message())
+        send_telegram_message(format_no_stocks_message(market_status))
         return
 
     breakout_filtered_df = apply_price_breakout_filter(momentum_shortlist_df)
     if breakout_filtered_df.empty:
-        send_telegram_message(format_no_stocks_message())
+        send_telegram_message(format_no_stocks_message(market_status))
         return
 
     volatility_filtered_df = apply_volatility_filter(breakout_filtered_df)
     if volatility_filtered_df.empty:
-        send_telegram_message(format_no_stocks_message())
+        send_telegram_message(format_no_stocks_message(market_status))
         return
 
     final_df = build_final_shortlist(volatility_filtered_df)
     if final_df.empty:
-        send_telegram_message(format_no_stocks_message())
+        send_telegram_message(format_no_stocks_message(market_status))
         return
 
     print("\nFinal Shortlist:")
@@ -365,7 +368,7 @@ def main():
         ].to_markdown(index=False)
     )
 
-    send_telegram_message(format_shortlist_message(final_df))
+    send_telegram_message(format_shortlist_message(final_df, market_status))
 
 
 if __name__ == "__main__":
