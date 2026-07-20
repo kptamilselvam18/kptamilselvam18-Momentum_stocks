@@ -5,7 +5,6 @@
 Same logic as the original Momentum.ipynb notebook:
   1. Market Regime check   -> Nifty 50 Supertrend (ATR 14, Mult 2)
   2. Momentum Ranking       -> Top 20 Nifty 500 stocks by 1-month return
-                               (price > ₹100 only)
   3. Price Breakout Filter  -> Close > highest high of last 50 days
   4. Volatility Filter      -> 14-day ATR < 5% of Close
   5. Final Shortlist        -> Top NUM_STOCKS by momentum score
@@ -176,8 +175,6 @@ def calculate_momentum_scores(tickers):
                 continue
 
             latest_close = df["Close"].iloc[-1]
-            if latest_close <= 100:
-                continue
 
             returns_1m = (df["Close"].iloc[-1] / df["Close"].iloc[-21]) - 1
             momentum_score = returns_1m
@@ -196,7 +193,7 @@ def calculate_momentum_scores(tickers):
 
     momentum_df = pd.DataFrame(momentum_data)
     if momentum_df.empty:
-        print("No stocks passed initial data checks and price filter.")
+        print("No stocks passed initial data checks.")
         return pd.DataFrame()
 
     momentum_df = momentum_df.sort_values(by="Momentum_Score", ascending=False).head(20)
@@ -358,7 +355,7 @@ def format_unfiltered_message(momentum_df, market_status):
     lines = [
         "*📊 Momentum Scan — WITHOUT Filters*",
         f"_{regime_note}_",
-        f"_Top {len(ranked)} stocks by 1-month momentum (price > ₹100 only)_",
+        f"_Top {len(ranked)} stocks by 1-month momentum_",
         "",
     ]
     for i, row in ranked.iterrows():
